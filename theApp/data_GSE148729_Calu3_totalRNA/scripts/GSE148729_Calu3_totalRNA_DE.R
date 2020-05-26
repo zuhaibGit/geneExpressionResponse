@@ -6,7 +6,7 @@ library(DESeq2)
 library(ggplot2)
 library(stringr)
 library(factoextra)
-setwd("/home/zuhaib/Desktop/covid19Research/rnaSeqData/GSE148729/dataFiles/GSE148729_Calu3_totalRNA")
+setwd("/home/zuhaib/Desktop/covid19Research/hackSeqRNA/Pan-Coronavirus-Gene-Regulatory-Networks/theApp/data_GSE148729_Calu3_totalRNA")
 
 # Load data and convert it to a numeric matrix
 data <- read.table("GSE148729_Calu3_totalRNA_readcounts.txt", header = T, sep = "\t")
@@ -221,3 +221,118 @@ res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") 
 res11 <- res
 ggplot(res11, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
 write.table(res11, "mock-4h-mock-12h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S1 4H VS MOCK 4H ##
+# Select the approppriate data
+data1 <- data[,c(1,2,13,14)]
+meta1 <- meta[c(1,2,13,14),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Infection)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res12 <- res
+ggplot(res12, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res12, "mock-4h-s1-4h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S2 4H VS MOCK 4H ##
+# Select the approppriate data
+data1 <- data[,c(7,8,13,14)]
+meta1 <- meta[c(7,8,13,14),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Infection)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res13 <- res
+ggplot(res13, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res13, "mock-4h-s2-4h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S1 24H VS MOCK 24H ##
+# Select the approppriate data
+data1 <- data[,c(5,6,15,16)]
+meta1 <- meta[c(5,6,15,16),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Infection)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res14 <- res
+ggplot(res14, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res14, "mock-24h-s1-24h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S2 24H VS MOCK 24H ##
+# Select the approppriate data
+data1 <- data[,c(11,12,15,16)]
+meta1 <- meta[c(11,12,15,16),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Infection)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res15 <- res
+ggplot(res15, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res15, "mock-24h-s2-24h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S1 4H VS 24H ##
+# Select the approppriate data
+data1 <- data[,c(1,2,5,6)]
+meta1 <- meta[c(1,2,5,6),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Time)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res16 <- res
+res16$log2FoldChange <- res16$log2FoldChange * (-1)
+ggplot(res16, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res16, "s1-4h-s1-24h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE S2 4H VS 24H ##
+# Select the approppriate data
+data1 <- data[,c(7,8,11,12)]
+meta1 <- meta[c(7,8,11,12),]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Time)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res17 <- res
+res17$log2FoldChange <- res17$log2FoldChange * (-1)
+ggplot(res17, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res17, "s2-4h-s2-24h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
+
+##  DE MOCK 4H VS 24H ##
+# Select the approppriate data
+data1 <- data[,13:16]
+meta1 <- meta[13:16,]
+# DE analysis
+obj <- DESeqDataSetFromMatrix(countData = data1, colData = meta1, design = ~ Time)
+obj <- DESeq(obj)
+res <- results(obj)
+res <- res[which(!is.na(res$padj)),]
+res <- as.data.frame(res)
+res <- res[order(res$log2FoldChange, decreasing = T),]
+res$Colour <- sapply(res$padj, function(x) if (x <= 0.05) return("Significant") else return("Not"))
+res18 <- res
+res18$log2FoldChange <- res18$log2FoldChange * (-1)
+ggplot(res18, aes(x = log2FoldChange, y = -log(padj))) + geom_point(aes(color = Colour)) + xlim(-14, 8) + ylim(0, 50)
+write.table(res18, "mock-4h-mock-24h.txt", row.names = T, col.names = T, sep = "\t", quote = F)
