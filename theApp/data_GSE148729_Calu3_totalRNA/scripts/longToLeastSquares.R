@@ -3,9 +3,7 @@
 # The slopes of these lines can be sued to compares a gene across the three samples
 ###########################################
 
-
-
-setwd("/home/zuhaib/Desktop/covid19Research/hackSeqRNA/theApp/data_GSE148729_Calu3_totalRNA")
+setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp/data_GSE148729_Calu3_totalRNA")
 
 mock <- read.table("long_GSE148729_Calu3_mockInfection.txt", sep = "\t", header = T)
 cov1 <- read.table("long_GSE148729_Calu3_sarsCov1.txt", sep = "\t", header = T)
@@ -35,8 +33,8 @@ lr_mock <- lapply(genes, function(g) {
   return(c(slope = theModel$coefficients[[2]], yInt = theModel$coefficients[[1]]))
 })
 names(lr_mock) <- genes
-colnames(lr_mock) <- c("mock_slope", "mock_yInt")
 lr_mock <- do.call(rbind, lr_mock)
+colnames(lr_mock) <- c("mock_slope", "mock_yInt")
 
 # Get lines for each gene in cov1 infection group
 lr_cov1 <- lapply(genes, function(g) {
@@ -49,6 +47,7 @@ lr_cov1 <- lapply(genes, function(g) {
 })
 names(lr_cov1) <- genes
 lr_cov1 <- do.call(rbind, lr_cov1)
+colnames(lr_cov1) <- c("cov1_slope", "cov1_yInt")
 
 # Get lines for each gene in cov2 infection group
 lr_cov2 <- lapply(genes, function(g) {
@@ -61,6 +60,8 @@ lr_cov2 <- lapply(genes, function(g) {
 })
 names(lr_cov2) <- genes
 lr_cov2 <- do.call(rbind, lr_cov2)
+colnames(lr_cov2) <- c("cov2_slope", "cov2_yInt")
+
 
 retDF <- cbind(lr_mock, lr_cov1, lr_cov2)
 
