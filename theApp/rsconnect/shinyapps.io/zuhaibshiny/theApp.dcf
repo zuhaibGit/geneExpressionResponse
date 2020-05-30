@@ -1,0 +1,12 @@
+name: theApp
+title: theApp
+username:
+account: zuhaibshiny
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2377041
+bundleId: 3204788
+url: https://zuhaibshiny.shinyapps.io/theApp/
+when: 1590761390.77111
+asMultiple: FALSE
+asStatic: FALSE

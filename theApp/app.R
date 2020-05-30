@@ -2,7 +2,9 @@ library(shiny)
 library(ggplot2)
 library(stringr)
 library(ggplot2)
-setwd("/home/zuhaib/Desktop/covid19Research/hackSeqRNA/Pan-Coronavirus-Gene-Regulatory-Networks/theApp")
+library(BiocManager)
+options(repos = BiocManager::repositories())
+#setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp")
 
 fls <- unlist(lapply(list.files()[grep("data_", list.files())], function(d) {
   path <- paste0("./", d, "/")
