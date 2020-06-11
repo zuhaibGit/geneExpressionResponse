@@ -1,4 +1,6 @@
 Group	File	Columns
-long_GSE148729_Calu3_mockInfection	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_readcounts.txt	14,15,16,17
-long_GSE148729_Calu3_sarsCov1	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_readcounts.txt	2,3,4,5,6,7
-long_GSE148729_Calu3_sarsCov2	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_readcounts.txt	8,9,10,11,12,13
+GSE148729_Calu3_mockInfection	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_normalizedCounts.txt	14,15,16,17
+GSE148729_Calu3_sarsCov1	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_normalizedCounts.txt	2,3,4,5,6,7
+GSE148729_Calu3_sarsCov2	data_GSE148729_Calu3_totalRNA/GSE148729_Calu3_totalRNA_normalizedCounts.txt	8,9,10,11,12,13
+GSE56677_Calu3_mersCov	data_GSE56677_Calu3/GSE56677_Calu3_normalizedExpression.txt	2,4,6,7,8,9,10,15,16,17,18,19,20,25,27,28,31,33
+GSE56677_Calu3_mock	data_GSE56677_Calu3/GSE56677_Calu3_normalizedExpression.txt	3,5,11,12,13,14,21,22,23,24,26,29,30,32,34
