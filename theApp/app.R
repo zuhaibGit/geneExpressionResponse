@@ -5,7 +5,7 @@ library(ggplot2)
 library(BiocManager)
 #options(repos = BiocManager::repositories())
 setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp")
-
+# Reads in the long_ files
 fls <- unlist(lapply(list.files()[grep("data_", list.files())], function(d) {
   path <- paste0("./", d, "/")
   filesInDir <- list.files(path)
@@ -17,6 +17,25 @@ datasets <- lapply(fls, function(x) {
 names(datasets) <- fls
 names(datasets) <- str_replace_all(names(datasets), "\\.txt", "")
 names(datasets) <- str_replace_all(names(datasets), "\\..+long_", "")
+
+# Reads in the normalized expression data
+fls2 <- unlist(lapply(list.files()[grep("data_", list.files())], function(d) {
+  path <- paste0("./", d, "/")
+  filesInDir <- list.files(path)
+  return(paste0(path, filesInDir[grep("normalized_", filesInDir)]))
+}))
+normData <- lapply(fls2, function(x) {
+  read.table(x, header = T, sep = "\t")
+})
+names(normData) <- fls2
+names(normData) <- str_replace_all(names(normData), "\\.txt", "")
+names(normData) <- str_replace_all(names(normData), "\\..+normalized_", "")
+
+# Reads in file specifying which samples correspond to which columns in the normalized data.
+# This is the help disply the desired data in tabular format
+groupToColumns <- read.table("groupToColumns.txt", header = T, sep = "\t")
+groupToColumns$File <- str_replace_all(groupToColumns$File, "\\.txt", "")
+groupToColumns$File <- str_replace_all(groupToColumns$File, ".+normalized_", "")
 
 
 
@@ -39,7 +58,9 @@ ui <- pageWithSidebar(
   # Main panel for displaying outputs ----
   mainPanel(
     verbatimTextOutput("GNF"),
-    uiOutput("Plots")
+    tabsetPanel(type = "tabs", 
+                tabPanel("main", uiOutput("Plots")),
+                tabPanel("table", uiOutput("Tables")))
   )
 )
 
@@ -149,6 +170,18 @@ server <- function(input, output) {
           }
         }, height = max(20, (plotWindow()$top - plotWindow()$bottom) * (3100/(plotWindow()$top - plotWindow()$bottom) + 800) / 35))
       })
+  })
+  
+  output$Tables <- renderUI({
+    lapply(dataToPlot(), function(d) {
+      renderTable({
+        selDataSet <- d$Name
+        selNormData <- groupToColumns[which(groupToColumns$Group == selDataSet),2]
+        selCols <- c(1,as.integer(strsplit(groupToColumns[which(groupToColumns$Group == selDataSet),3], ",")[[1]]))
+        retDF <- normData[[selNormData]]
+        return(retDF[1:3,selCols])
+      })
+    })
   })
 }
 
