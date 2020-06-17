@@ -1,6 +1,6 @@
-Group	File	Columns
-GSE148729_Calu3_mockInfection	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	14,15,16,17
-GSE148729_Calu3_sarsCov1	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	2,3,4,5,6,7
-GSE148729_Calu3_sarsCov2	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	8,9,10,11,12,13
-GSE56677_Calu3_mersCov	data_GSE56677_Calu3/normalized_GSE56677.txt	2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
-GSE56677_Calu3_mock	data_GSE56677_Calu3/normalized_GSE56677.txt	20,21,22,23,24,25,26,27,28,29,30,31,32,33,34
+Group	File	Columns	PrimaryID
+GSE148729_Calu3_mockInfection	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	14,15,16,17	ensembl
+GSE148729_Calu3_sarsCov1	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	2,3,4,5,6,7	ensembl
+GSE148729_Calu3_sarsCov2	data_GSE148729_Calu3_totalRNA/normalized_GSE148729.txt	8,9,10,11,12,13	ensembl
+GSE56677_Calu3_mersCov	data_GSE56677_Calu3/normalized_GSE56677.txt	2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19	agilentHumanG3
+GSE56677_Calu3_mock	data_GSE56677_Calu3/normalized_GSE56677.txt	20,21,22,23,24,25,26,27,28,29,30,31,32,33,34	agilentHumanG3
