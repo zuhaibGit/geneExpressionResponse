@@ -35,6 +35,7 @@ normData <- lapply(fls2, function(x) {
 names(normData) <- fls2
 names(normData) <- str_replace_all(names(normData), "\\.txt", "")
 names(normData) <- str_replace_all(names(normData), "\\..+normalized_", "")
+normData$GSE148729$geneID <- str_replace_all(normData$GSE148729$geneID, "\\..*", "")
 
 fls3 <- paste0("./geneMappings/", list.files("./geneMappings")[grep("mappings_", list.files("./geneMappings"))])
 mappings <- lapply(fls3, function(x) {
@@ -107,7 +108,6 @@ server <- function(input, output) {
   }
   ########## FUNCTIONS ##########
   
-  
   # Based on the user-selected genes and datasets, creates a line for each gene in each dataset
   # Returns the line for each gene in each dataset (lns), also returns the max and min x and y values (useful for defining plot dimentions)
   # as well as the name of the datset (Name)
@@ -131,8 +131,9 @@ server <- function(input, output) {
           if (nrow(ret) == 0) {
             return(NA)
           } else {
+            maps <- data.frame(Query = x, dataset_ID = unique(ret[,1]))
             ret[,1] <- x
-            return(ret)
+            return(list(ret, maps))
           }
         })
         retLst <- retLst[which(!(is.na(retLst)))]
@@ -146,6 +147,8 @@ server <- function(input, output) {
       genesNotFound <- genesOfInterest[which(is.na(lst))]
       lst <- lst[which(!is.na(lst))]
       lst <- unlist(lst, recursive = F)
+      geneMappings <- lapply(lst, function(l) return(l[[2]]))
+      lst <- lapply(lst, function(l) return(l[[1]]))
       lns <- lapply(lst, function(x) {
         if (input$collapseLines == "yes") {
           return(makeLine(x, T))
@@ -156,7 +159,7 @@ server <- function(input, output) {
       xMax <- max(unlist(lapply(lns, function(x) return(x[,1])))) + 1
       yMin <- min(unlist(lapply(lns, function(x) return(x[,2])))) - 1
       yMax <- max(unlist(lapply(lns, function(x) return(x[,2])))) + length(lns)*collapseFlag
-      return(list(Plot = lns, xMax = xMax, yMin = yMin, yMax = yMax, Name = y, notFound = genesNotFound, DS = y))
+      return(list(Plot = lns, xMax = xMax, yMin = yMin, yMax = yMax, Name = y, notFound = genesNotFound, DS = y, Mappings = geneMappings))
     }))
   })
   
@@ -215,8 +218,10 @@ server <- function(input, output) {
         selDataSet <- d$Name
         selNormData <- groupToColumns[which(groupToColumns$Group == selDataSet),2]
         selCols <- c(1,as.integer(strsplit(groupToColumns[which(groupToColumns$Group == selDataSet),3], ",")[[1]]))
-        retDF <- normData[[selNormData]]
-        return(retDF[1:3,selCols])
+        retDF <- normData[[selNormData]][,selCols]
+        geneMappings <- do.call(rbind, d$Mappings)
+        retDF <- merge(geneMappings, retDF, by.x = "dataset_ID", by.y = names(retDF)[1])
+        return(retDF)
       })
     })
   })
@@ -229,6 +234,6 @@ shinyApp(ui, server)
 
 
 
-
-
-
+# adf <- mappings$ensembl[which(mappings$ensembl$GENE_SYMBOL %in% c("ACE2", "BACE2", "DDT")), 1:2]
+# adf <- adf[,2:1]
+# bdf <- merge(adf, normData$GSE148729, by.x = "ENSEMBL_GENE_ID", by.y = "geneID")
