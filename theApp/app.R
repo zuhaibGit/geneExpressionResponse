@@ -3,6 +3,7 @@ library(ggplot2)
 library(stringr)
 library(ggplot2)
 library(BiocManager)
+library(DT)
 #options(repos = BiocManager::repositories())
 setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp")
 # Reads in the long_ files
@@ -52,13 +53,6 @@ groupToColumns$File <- str_replace_all(groupToColumns$File, "\\.txt", "")
 groupToColumns$File <- str_replace_all(groupToColumns$File, ".+normalized_", "")
 
 
-# adf <- datasets$GSE148729_Calu3_sarsCov2
-# bdf <- mappings$ensembl
-# testEntrez <- 6013
-# g <- bdf[which(bdf$ENTREZ_ID == testEntrez),1]
-# adf[grep(g[1], adf[,1]),]
-# adf[grep(g[2], adf[,1]),]
-
 # Define UI for miles per gallon app ----
 ui <- pageWithSidebar(
   
@@ -81,8 +75,8 @@ ui <- pageWithSidebar(
   mainPanel(
     verbatimTextOutput("GNF"),
     tabsetPanel(type = "tabs", 
-                tabPanel("main", uiOutput("Plots")),
-                tabPanel("table", uiOutput("Tables")))
+                tabPanel("Plots", uiOutput("main")),
+                tabPanel("Tables", uiOutput("table")))
   )
 )
 
@@ -185,7 +179,7 @@ server <- function(input, output) {
   })
   
   # Renders the plots. One plot for each selected dataset. The plot scales based on the max and min y-values
-  output$Plots <- renderUI({
+  output$main <- renderUI({
       lapply(dataToPlot(), function(d) {
         if (input$collapseLines == "yes") {
           collapseFlag <- 0
@@ -212,16 +206,16 @@ server <- function(input, output) {
       })
   })
   
-  output$Tables <- renderUI({
+  output$table <- renderUI({
     lapply(dataToPlot(), function(d) {
-      renderTable({
+      renderDataTable({
         selDataSet <- d$Name
         selNormData <- groupToColumns[which(groupToColumns$Group == selDataSet),2]
         selCols <- c(1,as.integer(strsplit(groupToColumns[which(groupToColumns$Group == selDataSet),3], ",")[[1]]))
         retDF <- normData[[selNormData]][,selCols]
         geneMappings <- do.call(rbind, d$Mappings)
         retDF <- merge(geneMappings, retDF, by.x = "dataset_ID", by.y = names(retDF)[1])
-        return(retDF)
+        return(datatable(retDF, caption = htmltools::tags$caption(style = 'caption-side: top; text-align: left; color:black; font-size:150% ;', selDataSet)))
       })
     })
   })
