@@ -1,11 +1,11 @@
 library(shiny)
-library(ggplot2)
+#library(ggplot2)
 library(stringr)
-library(ggplot2)
+#library(ggplot2)
 library(BiocManager)
 library(DT)
-#options(repos = BiocManager::repositories())
-setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp")
+options(repos = BiocManager::repositories())
+#setwd("/home/zuhaib/Desktop/covid19Research/geneResponseApp/geneExpressionResponse/theApp")
 # Reads in the long_ files
 fls <- unlist(lapply(list.files()[grep("data_", list.files())], function(d) {
   path <- paste0("./", d, "/")
@@ -36,6 +36,7 @@ normData <- lapply(fls2, function(x) {
 names(normData) <- fls2
 names(normData) <- str_replace_all(names(normData), "\\.txt", "")
 names(normData) <- str_replace_all(names(normData), "\\..+normalized_", "")
+# Remove the decimal extensions from the norm data to make it easier to query.
 normData$GSE148729$geneID <- str_replace_all(normData$GSE148729$geneID, "\\..*", "")
 
 fls3 <- paste0("./geneMappings/", list.files("./geneMappings")[grep("mappings_", list.files("./geneMappings"))])
@@ -75,6 +76,7 @@ ui <- pageWithSidebar(
   mainPanel(
     verbatimTextOutput("GNF"),
     tabsetPanel(type = "tabs", 
+                tabPanel("Instructions", htmlOutput("instructions")),
                 tabPanel("Plots", uiOutput("main")),
                 tabPanel("Tables", uiOutput("table")))
   )
@@ -96,7 +98,7 @@ server <- function(input, output) {
     }
     retDF <- data.frame(x = c(minTimePoint, timePoints$T2),
                         y = yVals,
-                        sig = c("Significant", timePoints$Colour),
+                        sig = c("Initial", timePoints$Colour),
                         gene = timePoints[1,1])
     return(retDF)
   }
@@ -172,6 +174,7 @@ server <- function(input, output) {
     return(list(right = maxX, left = minX, top = maxY, bottom = minY))
   })
   
+  # Rneders text at the top of the app, which shows which genes weren't found.
   output$GNF <- renderPrint({
     lapply(dataToPlot(), function(d) {
       return(paste("In", d$DS, "we didn't find", d$notFound))
@@ -194,7 +197,15 @@ server <- function(input, output) {
             lines(i$x,
                   i$y + vShift,
                   type = "b",
-                  col = sapply(i$sig, function(x) if (x == "Significant") return("black") else return("yellow")),
+                  col = sapply(i$sig, function(x) { 
+                    if (x == "Significant") { 
+                      return("black")
+                    } else if (x == "Initial") { 
+                      return("green") 
+                    } else {
+                      return("yellow") 
+                    }
+                    }),
                   cex = 2,
                   pch = 16)
             text(-5*collapseFlag + (1 - collapseFlag)*((i$x[length(i$x)]) + 3), 
@@ -206,6 +217,7 @@ server <- function(input, output) {
       })
   })
   
+  # Renders the tables of the datasets selected by the user.
   output$table <- renderUI({
     lapply(dataToPlot(), function(d) {
       renderDataTable({
@@ -218,6 +230,15 @@ server <- function(input, output) {
         return(datatable(retDF, caption = htmltools::tags$caption(style = 'caption-side: top; text-align: left; color:black; font-size:150% ;', selDataSet)))
       })
     })
+  })
+  
+  output$instructions <- renderUI({
+    retVec <- c("<h3>Purpose</h3> This is an exploratory tool for analyzing changes in human gene expression upon infection by different Coronaviruses (and mock infections).",
+                "<h3>Use</h3> The user will select the datasets of interest, the type of gene ID they are inputting, the list of gene IDs of interest (one per line), and whether to collapse lines. <br/>Normally, the plot will vertically space out the lines (representing the genes' trajectories). But collapsing the lines will allow them to all have the same starting origin. This will allow the user to better identify exceptional trajectories.",
+                "<h3>Genes Not Found</h3> The box at the top will indicate which of the queried genes weren't found in the selected datasets.",
+                "<h3>Plots Tab</h3> Each plot will show one line for each gene in the dataset; allowing the user to observe the log2foldchanges relative to the first measured timepoint in the experiment. A black dod indicates that the fold change was statistically significant, and yellow dot indicates that it was not. The left-most dot in each line is green. Note: The plots will all be the same size. This is to ensure that all plots generated have the same size/scale, to make them more comparable by eye. Unfortunately, this means that they may often have a lot of whitespace.",
+                "<h3>Tables Tab</h3> Simply looking at the plots will not give the whole story. A log2foldchange not being statistically significant doesn\'t imply that there wasn\'t a significant change between the two time points (It could just be the sample sizes are small, for example). Also, looking at just the lines may be misleading, as they don't specify the actual expression values, just the changes between time points. So there's not sense of how much the gene is expressed in the first place. For this purpose, the Tables tab shows the actual data (quantile normalized), so the user may explore the data further. It also shows the mappings between the user\'s input IDs, and the IDs present in the dataset of interest. Note: due to the difficuly of mapping between IDs, some user IDs may map to more than one of the dataset IDs, and vice versa. The mappings were done using the biomaRt package in R.")
+    return(HTML(paste(retVec[1], retVec[2], retVec[3], retVec[4], retVec[5], sep = "<br/>")))
   })
 }
 
