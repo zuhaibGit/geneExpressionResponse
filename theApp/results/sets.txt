@@ -1,0 +1,9 @@
+The files in this directory are labelled with prefix A-F, where the letter represents the group that's being compared to the rest of teh groups
+For example, D corresponds to Cov1-Cov2. These are the genes that have a different expression pattern to MERS-Mock1-Mock2.
+A: Cov1
+B: Cov2
+C: MERS
+D: Cov1-Cov2
+E: Cov1-MERS
+F: Cov2-MERS
+G: Cov1-Cov2-MERS
